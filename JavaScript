@@ -1,0 +1,25 @@
+// 마이크로비트 V1.5용 자세 교정 통신 수신 코드
+
+// 시리얼 통신 속도를 115200bps로 설정
+serial.redirect(
+    SerialPin.P0,
+    SerialPin.P1,
+    BaudRate.BaudRate115200
+)
+
+basic.showIcon(IconNames.Happy) // 최초 부팅 완료 표시
+
+// 줄바꿈 문자로 끝나는 시리얼 데이터 수신 이벤트
+serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
+    let cmd = serial.readString().trim()
+    
+    // AI 판단 결과에 따른 동작
+    if (cmd == "right") {
+        // 올바른 자세 인식 시: O (체크 표시)
+        basic.showIcon(IconNames.Yes)
+    } else if (cmd == "wrong") {
+        // 잘못된 자세 인식 시: X 표시 및 경고음
+        basic.showIcon(IconNames.No)
+        music.playTone(Note.C5, music.beat(BeatFraction.Half))
+    }
+})
